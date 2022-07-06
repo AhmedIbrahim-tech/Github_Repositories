@@ -8,75 +8,86 @@ getButton.onclick = function () {
 };
 
 // Get Repos Function
-function getRepos() {
-
-  if (theInput.value == "") { // If Value Is Empty
+async function getRepos() {
+  if (theInput.value == "") {
+    // If Value Is Empty
 
     reposData.innerHTML = "<span>Please Write Github Username.</span>";
-
   } else {
+    const url = `https://api.github.com/users/${theInput.value}/repos`;
+    const response = await fetch(url);
+    let data = await response.json();
 
-    fetch(`https://api.github.com/users/${theInput.value}/repos`)
+    // Empty The Container
+    reposData.innerHTML = "";
 
-    .then((response) => response.json())
+    // Loop On Repositories
+    data.forEach((repo, i) => {
+      // Create The Main Div Element
+      let mainDiv = document.createElement("div");
 
-    .then((repositories) => {
+      // ----------------------- Index Element ----------------------
 
-      // Empty The Container
-      reposData.innerHTML = '';
+      // Create The Main Index Element
+      let mainIndex = document.createElement("p");
 
-      // Loop On Repositories
-      repositories.forEach(repo => {
+      // Create Index Name Text
+      let IndexName = document.createTextNode(i + 1);
 
-        // Create The Main Div Element
-        let mainDiv = document.createElement("div");
+      // Append The Index Name To Main Index
+      mainIndex.appendChild(IndexName);
 
-        // Create Repo Name Text
-        let repoName = document.createTextNode(repo.name);
+      // Add Class On Main Div
+      mainIndex.className = "index-box";
 
-        // Append The Text To Main Div
-        mainDiv.appendChild(repoName);
+      // Append Index Anchor To Main Div
+      mainDiv.appendChild(mainIndex);
 
-        // Create Repo URL Anchor
-        let theUrl = document.createElement('a');
+      // ------------------End Index Element -----------------------
 
-        // Create Repo Url Text
-        let theUrlText = document.createTextNode("Visit");
+      // Create Repo Name Text
+      let repoName = document.createTextNode(repo.name);
 
-        // Append The Repo Url Text To Anchor Tag
-        theUrl.appendChild(theUrlText);
+      // Append The Text To Main Div
+      mainDiv.appendChild(repoName);
 
-        // Add Thje Hypertext Reference "href"
-        theUrl.href = `https://github.com/${theInput.value}/${repo.name}`;
+      // Create Repo URL Anchor
+      let theUrl = document.createElement("a");
 
-        // Set Attribute Blank
-        theUrl.setAttribute('target', '_blank');
+      // Create Repo Url Text
+      let theUrlText = document.createTextNode("Visit");
 
-        // Append Url Anchor To Main Div
-        mainDiv.appendChild(theUrl);
+      // Append The Repo Url Text To Anchor Tag
+      theUrl.appendChild(theUrlText);
 
-        // Create Stars Count Span
-        let starsSpan = document.createElement("span");
+      // Add Thje Hypertext Reference "href"
+      theUrl.href = `https://github.com/${theInput.value}/${repo.name}`;
 
-        // Create The Stars Count Text
-        let starsText = document.createTextNode(`Stars ${repo.stargazers_count}`);
+      // Set Attribute Blank
+      theUrl.setAttribute("target", "_blank");
 
-        // Add Stars Count Text To Stars Span
-        starsSpan.appendChild(starsText);
+      // Append Url Anchor To Main Div
+      mainDiv.appendChild(theUrl);
 
-        // Append Stars Count Span To Main Div
-        mainDiv.appendChild(starsSpan);
+      // Create Stars Count Span
+      let starsSpan = document.createElement("span");
 
-        // Add Class On Main Div
-        mainDiv.className = 'repo-box';
+      // Create The Stars Count Text
+      let starsText = document.createTextNode(
+        `Stars [ ${repo.stargazers_count} ]`
+      );
 
-        // Append The Main Div To Container
-        reposData.appendChild(mainDiv);
+      // Add Stars Count Text To Stars Span
+      starsSpan.appendChild(starsText);
 
-      });
+      // Append Stars Count Span To Main Div
+      mainDiv.appendChild(starsSpan);
 
+      // Add Class On Main Div
+      mainDiv.className = "repo-box";
+
+      // Append The Main Div To Container
+      reposData.appendChild(mainDiv);
     });
-
   }
-
 }
